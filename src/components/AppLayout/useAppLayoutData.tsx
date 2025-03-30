@@ -3,11 +3,9 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { PATHS } from "~/constants";
 
 const useAppLayoutData = () => {
+  const navigate = useNavigate();
   const { pathname } = useLocation();
 
-  const activeTabKey = pathname;
-
-  const navigate = useNavigate();
   const tabs = useMemo(
     () =>
       [
@@ -22,6 +20,10 @@ const useAppLayoutData = () => {
       ] as const,
     []
   );
+
+  const activeTabKey = tabs
+    .map((tab) => tab.pathKey)
+    .find((key) => key === pathname);
 
   const tabChangeHandler = (key: string) => {
     const tab = tabs.find((tab) => tab.pathKey === key);

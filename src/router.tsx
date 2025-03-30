@@ -1,12 +1,12 @@
 import { lazy, Suspense } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { PATHS } from "./constants";
 import AppLayout from "@components/AppLayout/AppLayout";
+import LoadingSpinner from "@components/LoadingSpinner";
 const InfoMessage = lazy(() => import("@components/InfoMessage"));
 const Users = lazy(() => import("@pages/Users"));
 const Posts = lazy(() => import("@pages/Posts"));
-import { PATHS } from "./constants";
-import LoadingSpinner from "@components/LoadingSpinner";
-
+const Tasks = lazy(() => import("@pages/Tasks"));
 const router = createBrowserRouter([
   {
     element: <AppLayout />,
@@ -20,7 +20,7 @@ const router = createBrowserRouter([
         ),
         children: [
           {
-            path: `${PATHS.USERS}/:userId`,
+            path: PATHS.POSTS,
             element: (
               <Suspense fallback={<LoadingSpinner />}>
                 <Posts />
@@ -31,7 +31,11 @@ const router = createBrowserRouter([
       },
       {
         path: PATHS.TASKS,
-        element: <Suspense fallback={<LoadingSpinner />}>Tasks</Suspense>,
+        element: (
+          <Suspense fallback={<LoadingSpinner />}>
+            <Tasks />
+          </Suspense>
+        ),
       },
       {
         path: "*",

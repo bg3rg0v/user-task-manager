@@ -1,0 +1,10 @@
+.selectOverride {
+  & :global(.ant-tabs-tab-active .ant-tabs-tab-btn) {
+    color: inherit !important;
+    text-shadow: inherit !important;
+  }
+
+  & :global(.ant-tabs-ink-bar) {
+    width: 0 !important;
+  }
+}
