@@ -1,6 +1,6 @@
 export const PATHS = {
   HOME: "/",
   USERS: "/users",
-  POSTS: ":userId/posts",
+  POSTS: (userId?: string | number) => `/users/${userId}/posts`,
   TASKS: "/tasks",
 };

@@ -16,7 +16,6 @@ const AppLayout = () => {
           centered
           items={tabs.map((tab) => {
             return {
-              className: "myClass",
               label: tab.label,
               key: tab.pathKey,
               children: <Outlet />,

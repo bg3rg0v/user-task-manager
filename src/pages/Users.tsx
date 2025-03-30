@@ -1,9 +1,15 @@
-import { Outlet, useParams } from "react-router-dom";
+import { List } from "antd";
+import UserItem from "@components/UserItem";
+import users from "../mockData/users.json";
 
 const Users = () => {
-  const params = useParams();
-  const isPostsPage = "userId" in params;
-  return isPostsPage ? <Outlet /> : "Users";
+  return (
+    <List
+      itemLayout="vertical"
+      dataSource={users}
+      renderItem={(user) => <UserItem user={user} />}
+    />
+  );
 };
 
 export default Users;

@@ -12,28 +12,26 @@ const router = createBrowserRouter([
     element: <AppLayout />,
     children: [
       {
+        path: PATHS.TASKS,
+        element: (
+          <Suspense fallback={<LoadingSpinner />}>
+            <Tasks />
+          </Suspense>
+        ),
+      },
+      {
         path: PATHS.USERS,
         element: (
           <Suspense fallback={<LoadingSpinner />}>
             <Users />
           </Suspense>
         ),
-        children: [
-          {
-            path: PATHS.POSTS,
-            element: (
-              <Suspense fallback={<LoadingSpinner />}>
-                <Posts />
-              </Suspense>
-            ),
-          },
-        ],
       },
       {
-        path: PATHS.TASKS,
+        path: PATHS.POSTS(":userId"),
         element: (
           <Suspense fallback={<LoadingSpinner />}>
-            <Tasks />
+            <Posts />
           </Suspense>
         ),
       },
