@@ -3,6 +3,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { PATHS } from "./constants";
 import AppLayout from "@components/AppLayout/AppLayout";
 import LoadingSpinner from "@components/LoadingSpinner";
+import PostsProvider from "./context/PostsProvider";
 const InfoMessage = lazy(() => import("@components/InfoMessage"));
 const Users = lazy(() => import("@pages/Users"));
 const Posts = lazy(() => import("@pages/Posts"));
@@ -47,4 +48,8 @@ const router = createBrowserRouter([
   },
 ]);
 
-export const AppRouter = () => <RouterProvider router={router} />;
+export const AppRouter = () => (
+  <PostsProvider>
+    <RouterProvider router={router} />
+  </PostsProvider>
+);

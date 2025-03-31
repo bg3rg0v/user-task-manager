@@ -38,3 +38,8 @@ export interface Post {
 }
 
 export type Posts = Post[];
+
+export interface Task {
+  id: string;
+}
+export type Tasks = Task[];

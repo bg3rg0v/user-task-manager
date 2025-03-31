@@ -1,6 +1,6 @@
 import { Button, Col, Flex, Form, Input, Row } from "antd";
 import React from "react";
-import { User } from "~/interfaces";
+import { User } from "~/lib/interfaces";
 
 const onFinish = (value: {
   username: string;

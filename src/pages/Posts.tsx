@@ -1,24 +1,39 @@
 import { Link, useParams } from "react-router-dom";
-import posts from "../mockData/posts.json";
 import users from "../mockData/users.json";
-import UserForm from "@components/UserForm";
+import UserForm from "@components/Users/UserForm";
 import { Button, List } from "antd";
-import PostItem from "@components/PostItem";
+import PostItem from "@components/Posts/EditPost";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import { PATHS } from "~/constants";
-
+import LoadingSpinner from "@components/LoadingSpinner";
+import { usePostsContext } from "~/context/usePostsContext";
+import { useEffect } from "react";
 const Posts = () => {
-  // TO DO: fetch posts with userId
   const { userId } = useParams();
-  console.log(userId);
-  const user = users[0];
+  const { posts, loading, error, fetchPosts } = usePostsContext();
+
+  useEffect(() => {
+    if (!userId || isNaN(Number(userId))) return;
+    if (posts?.[userId]) return;
+    (async (userId) => {
+      await fetchPosts(Number(userId));
+    })(userId);
+  }, [userId, posts, fetchPosts]);
+
+  // TODO: get from redux store
+  const user = users.find((user) => user.id === Number(userId));
+  if (loading) return <LoadingSpinner />;
+  if (error) return <>Error</>;
+
+  const dataSource = userId ? posts?.[userId] : [];
 
   return (
     <List
+      itemLayout="vertical"
       header={
         <>
           <UserForm
-            user={user}
+            user={user!}
             navigationLink={
               <Link to={PATHS.USERS}>
                 <Button
@@ -35,8 +50,14 @@ const Posts = () => {
         </>
       }
       bordered
-      dataSource={posts}
-      renderItem={(post) => <PostItem post={post} />}
+      dataSource={dataSource}
+      renderItem={(post) => (
+        <PostItem
+          key={`post-item-${post.id}`}
+          userId={Number(userId)}
+          post={post}
+        />
+      )}
     />
   );
 };

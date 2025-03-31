@@ -1,5 +1,5 @@
 import { List } from "antd";
-import UserItem from "@components/UserItem";
+import UserItem from "@components/Users/UserItem";
 import users from "../mockData/users.json";
 
 const Users = () => {

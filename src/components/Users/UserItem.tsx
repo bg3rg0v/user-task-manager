@@ -1,7 +1,7 @@
 import { ArrowRightOutlined, DownOutlined } from "@ant-design/icons";
 import { Button, Collapse, List, Typography } from "antd";
 import UserForm from "./UserForm";
-import { User } from "~/interfaces";
+import { User } from "~/lib/interfaces";
 import { Link } from "react-router-dom";
 import { PATHS } from "~/constants";
 
