@@ -68,7 +68,6 @@ const PostsProvider = ({ children }: { children: React.ReactNode }) => {
     setError(null);
     try {
       await api.deletePost(postId);
-      // Update local state after successful deletion
       updatePostsStorage(userId, (userPosts) =>
         userPosts.filter((post) => post.id !== postId)
       );
