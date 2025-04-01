@@ -1,7 +1,7 @@
 import type React from "react";
 import { useCallback, useState } from "react";
 import { Post } from "@lib/interfaces";
-import * as api from "../lib/api";
+import * as api from "@lib/api";
 import { PostsContext, PostsStorage } from "./usePostsContext";
 
 const PostsProvider = ({ children }: { children: React.ReactNode }) => {

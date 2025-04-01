@@ -1,6 +1,6 @@
-import type { Post } from "./interfaces";
+import type { Post, Task } from "./interfaces";
 
-const API_BASE_URL = "https://jsonplaceholder.typicode.com";
+export const API_BASE_URL = "https://jsonplaceholder.typicode.com";
 export async function getUserPosts(userId: string | number): Promise<Post[]> {
   const response = await fetch(`${API_BASE_URL}/posts?userId=${userId}`);
   if (!response.ok) {
@@ -33,4 +33,29 @@ export async function deletePost(postId: number): Promise<void> {
   if (!response.ok) {
     throw new Error(`Failed to delete post with ID ${postId}`);
   }
+}
+
+export async function getTasks(): Promise<Task[]> {
+  const response = await fetch(`${API_BASE_URL}/todos`);
+  if (!response.ok) {
+    throw new Error("Failed to fetch tasks");
+  }
+  return response.json();
+}
+
+export async function updateTask(
+  taskId: number,
+  taskData: Partial<Task>
+): Promise<Task> {
+  const response = await fetch(`${API_BASE_URL}/todos/${taskId}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(taskData),
+  });
+  if (!response.ok) {
+    throw new Error(`Failed to update task with ID ${taskId}`);
+  }
+  return response.json();
 }

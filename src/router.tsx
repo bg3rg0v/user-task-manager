@@ -7,7 +7,8 @@ import PostsProvider from "./context/PostsProvider";
 const InfoMessage = lazy(() => import("@components/InfoMessage"));
 const Users = lazy(() => import("@pages/Users"));
 const Posts = lazy(() => import("@pages/Posts"));
-const Tasks = lazy(() => import("@pages/Tasks"));
+const Tasks = lazy(() => import("@pages/Tasks/Tasks"));
+import { StoreProvider } from "@store/StoreProvider";
 const router = createBrowserRouter([
   {
     element: <AppLayout />,
@@ -49,7 +50,9 @@ const router = createBrowserRouter([
 ]);
 
 export const AppRouter = () => (
-  <PostsProvider>
-    <RouterProvider router={router} />
-  </PostsProvider>
+  <StoreProvider>
+    <PostsProvider>
+      <RouterProvider router={router} />
+    </PostsProvider>
+  </StoreProvider>
 );

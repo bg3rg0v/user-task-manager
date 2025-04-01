@@ -37,9 +37,9 @@ export interface Post {
   body: string;
 }
 
-export type Posts = Post[];
-
 export interface Task {
-  id: string;
+  userId: number;
+  id: number;
+  title: string;
+  completed: boolean;
 }
-export type Tasks = Task[];
