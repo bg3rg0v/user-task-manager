@@ -1,36 +1,33 @@
+import { User } from "@lib/interfaces";
 import { Button, Col, Flex, Form, Input, Row } from "antd";
-import React from "react";
-import { User } from "~/lib/interfaces";
+import type React from "react";
+import useEditUserData from "./useEditUserData";
 
-const onFinish = (value: {
-  username: string;
-  email: string;
-  street: string;
-  suite: string;
-  city: string;
-}) => {
-  console.log("Received value of form: ", value);
-};
-const UserForm = ({
+const EditUser = ({
   user,
   navigationLink,
 }: {
   user: User;
   navigationLink?: React.ReactNode | React.ReactNode[];
 }) => {
+  const {
+    form,
+    formStatus: { isChanged, isValid },
+    originalValues,
+    handleReset,
+    onFinish,
+    handleFieldsChange,
+  } = useEditUserData(user);
+
   return (
     <Form
-      name={`complex-form-${user.username}`}
-      layout={"vertical"}
-      onFinish={onFinish}
+      form={form}
+      name={`user-form-${user.id}`}
+      layout="vertical"
       wrapperCol={{ span: 24 }}
-      initialValues={{
-        username: user.username,
-        email: user.email,
-        street: user.address.street,
-        suite: user.address.suite,
-        city: user.address.city,
-      }}
+      onFinish={onFinish}
+      initialValues={originalValues}
+      onFieldsChange={handleFieldsChange}
     >
       <Row gutter={12}>
         <Col span={12}>
@@ -87,20 +84,23 @@ const UserForm = ({
           </Col>
         </Row>
       </Form.Item>
-
-      <Form.Item label={null}>
+      <Form.Item>
         <Flex gap={12} justify="flex-end">
-          {/* TO DO: make Submit button available after changes */}
-          <>
-            <Button type="primary" htmlType="submit">
-              Submit
-            </Button>
-            {navigationLink}
-          </>
+          <Button onClick={handleReset} disabled={!isChanged}>
+            Cancel
+          </Button>
+          <Button
+            type="primary"
+            htmlType="submit"
+            disabled={!isChanged || !isValid}
+          >
+            Save
+          </Button>
+          {navigationLink}
         </Flex>
       </Form.Item>
     </Form>
   );
 };
 
-export default UserForm;
+export default EditUser;

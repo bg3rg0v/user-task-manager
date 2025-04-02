@@ -10,7 +10,7 @@ const Tasks = () => {
   );
   const { columns, handleTableChange } = useTasksData();
 
-  if (status === "loading") return <LoadingSpinner />;
+  if (status === "idle" || status === "loading") return <LoadingSpinner />;
   if (error) return <>Error</>;
 
   return (

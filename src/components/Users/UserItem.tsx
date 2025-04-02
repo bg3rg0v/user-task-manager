@@ -1,6 +1,6 @@
 import { ArrowRightOutlined, DownOutlined } from "@ant-design/icons";
 import { Button, Collapse, List, Typography } from "antd";
-import UserForm from "./UserForm";
+import EditUser from "./EditUser";
 import { User } from "~/lib/interfaces";
 import { Link } from "react-router-dom";
 import { PATHS } from "~/constants";
@@ -17,7 +17,7 @@ const UserItem = ({ user }: { user: User }) => (
           key: user.email,
           label: <Typography.Text>{user.name}</Typography.Text>,
           children: user && (
-            <UserForm
+            <EditUser
               user={user}
               navigationLink={
                 <Link to={PATHS.POSTS(user.id)}>

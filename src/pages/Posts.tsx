@@ -1,6 +1,4 @@
 import { Link, useParams } from "react-router-dom";
-import users from "../mockData/users.json";
-import UserForm from "@components/Users/UserForm";
 import { Button, List } from "antd";
 import PostItem from "@components/Posts/EditPost";
 import { ArrowLeftOutlined } from "@ant-design/icons";
@@ -8,21 +6,46 @@ import { PATHS } from "~/constants";
 import LoadingSpinner from "@components/LoadingSpinner";
 import { usePostsContext } from "~/context/usePostsContext";
 import { useEffect } from "react";
+import { useAppDispatch, useAppSelector } from "@store/hooks";
+import { fetchUsers } from "@store/features/usersSlice";
+import InfoMessage from "@components/InfoMessage";
+import EditUser from "@components/Users/EditUser";
 const Posts = () => {
-  const { userId } = useParams();
-  const { posts, loading, error, fetchPosts } = usePostsContext();
+  const dispatch = useAppDispatch();
+  const params = useParams<{ userId: string }>();
+  const userId = Number(params.userId);
+
+  const { status, users } = useAppSelector((state) => state.users);
+  const user = users.find((user) => user.id === userId);
+  const {
+    posts,
+    loading: isPostsLoading,
+    error,
+    fetchPosts,
+  } = usePostsContext();
+
+  const isUserLoading = status === "idle" || status === "loading";
+  const isPageLoading = isPostsLoading || isUserLoading;
+
   useEffect(() => {
-    if (!userId || isNaN(Number(userId))) return;
+    if (status === "idle") {
+      dispatch(fetchUsers());
+    }
+
+    if (!userId || isNaN(userId)) return;
     if (posts?.[userId]) return;
     fetchPosts(Number(userId));
-  }, [userId, posts, fetchPosts]);
+  }, [userId, posts, fetchPosts, status, dispatch]);
 
-  // TODO: get from redux store
-  const user = users.find((user) => user.id === Number(userId));
-  if (loading) return <LoadingSpinner />;
+  if (isPageLoading) return <LoadingSpinner />;
   if (error) return <>Error</>;
 
-  const dataSource = userId ? posts?.[userId] : [];
+  if (!user)
+    return (
+      <InfoMessage message={`User with ID ${params.userId} does not exist`} />
+    );
+
+  // const dataSource = user ? posts?.[user.id] : [];
 
   return (
     <>
@@ -30,8 +53,8 @@ const Posts = () => {
         itemLayout="vertical"
         header={
           <>
-            <UserForm
-              user={user!}
+            <EditUser
+              user={user}
               navigationLink={
                 <Link to={PATHS.USERS}>
                   <Button
@@ -48,7 +71,7 @@ const Posts = () => {
           </>
         }
         bordered
-        dataSource={dataSource}
+        dataSource={posts?.[user.id]}
         renderItem={(post) => (
           <PostItem
             key={`post-item-${post.id}`}

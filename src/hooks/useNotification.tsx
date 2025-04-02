@@ -15,8 +15,6 @@ const useNotification = () => {
 
   const notification = useCallback(
     (message: string, type?: NoticeType) => {
-      console.log("calling notification");
-
       messageApi.open({
         type: type ?? "info",
         content: message,

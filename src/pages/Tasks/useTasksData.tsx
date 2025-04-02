@@ -9,16 +9,15 @@ import {
 import { useAppDispatch, useAppSelector } from "@store/hooks";
 import { TableProps } from "antd";
 import { useEffect, useState } from "react";
-
-import users from "../../mockData/users.json";
 import { FilterValue } from "antd/es/table/interface";
 import { head } from "lodash";
 import { getTableColumns } from "./tasksTablePreprocessor";
+import users from "../../mockData/users.json";
 
 type Filter = FilterValue | null;
 const useTasksData = () => {
   const dispatch = useAppDispatch();
-  const { status, filteredTasks } = useAppSelector((state) => state.tasks);
+  const { status } = useAppSelector((state) => state.tasks);
   const [searchText, setSearchText] = useState("");
 
   useEffect(() => {
@@ -41,7 +40,6 @@ const useTasksData = () => {
 
   const handleTitleFilterChange = (title: Filter) => {
     const titleValue = head(title) ?? "";
-    console.log(titleValue);
     dispatch(setTitleFilter(`${titleValue}`));
   };
 
@@ -49,14 +47,10 @@ const useTasksData = () => {
     pagination,
     { userId, status, title }
   ) => {
-    console.log("executes table change");
-
     handleTitleFilterChange(title);
     handleUserIdFilterChange(userId);
     handleStatusFilterChange(status);
     if (pagination.current) {
-      console.log("here");
-
       dispatch(setCurrentPage(pagination.current));
     }
   };
@@ -65,11 +59,9 @@ const useTasksData = () => {
     selectedKeys: string[],
     confirmCallBack: () => void
   ) => {
-    //     confirm({ closeDropdown: false })
     setSearchText(selectedKeys[0]);
     confirmCallBack();
   };
-  console.log(filteredTasks);
 
   return {
     columns: getTableColumns(users),

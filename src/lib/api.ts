@@ -1,4 +1,4 @@
-import type { Post, Task } from "./interfaces";
+import type { Post, Task, User } from "./interfaces";
 
 export const API_BASE_URL = "https://jsonplaceholder.typicode.com";
 export async function getUserPosts(userId: string | number): Promise<Post[]> {
@@ -56,6 +56,39 @@ export async function updateTask(
   });
   if (!response.ok) {
     throw new Error(`Failed to update task with ID ${taskId}`);
+  }
+  return response.json();
+}
+
+export async function getUsers(): Promise<User[]> {
+  const response = await fetch(`${API_BASE_URL}/users`);
+  if (!response.ok) {
+    throw new Error(`Failed to fetch users`);
+  }
+  return response.json();
+}
+
+export async function getUser(userId: number): Promise<User> {
+  const response = await fetch(`${API_BASE_URL}/users/${userId}`);
+  if (!response.ok) {
+    throw new Error(`Failed to fetch user with ID ${userId}`);
+  }
+  return response.json();
+}
+
+export async function updateUser(
+  userId: number,
+  userData: Partial<User>
+): Promise<User> {
+  const response = await fetch(`${API_BASE_URL}/users/${userId}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(userData),
+  });
+  if (!response.ok) {
+    throw new Error(`Failed to update user with ID ${userId}`);
   }
   return response.json();
 }

@@ -34,8 +34,6 @@ const PostsProvider = ({ children }: { children: React.ReactNode }) => {
 
   const fetchPosts = useCallback(
     async (userId: string | number) => {
-      console.log("calling fetch posts");
-
       setLoading(true);
       try {
         const postsData = await api.getUserPosts(userId);
@@ -62,7 +60,7 @@ const PostsProvider = ({ children }: { children: React.ReactNode }) => {
   const savePost = async (postId: number, postData: Partial<Post>) => {
     try {
       await api.updatePost(postId, postData);
-      notification("Post Saved!", "success");
+      notification("Post Saved", "success");
     } catch (err) {
       notification(isApiError(err) ? err.message : "Unknown Error", "error");
     }
@@ -72,7 +70,7 @@ const PostsProvider = ({ children }: { children: React.ReactNode }) => {
     setDeletePostId(postId);
     try {
       await api.deletePost(postId);
-      notification("Posts Deleted");
+      notification("Post Deleted");
       updatePostsStorage(userId, (userPosts) =>
         userPosts.filter((post) => post.id !== postId)
       );
