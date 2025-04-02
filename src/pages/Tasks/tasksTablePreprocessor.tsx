@@ -5,7 +5,10 @@ import { SearchOutlined } from "@ant-design/icons";
 import TableSearch from "./TableSearch";
 
 export type DataIndex = keyof Task;
-const getColumnSearchProps = (dataIndex: DataIndex): TableColumnType<Task> => ({
+const getColumnSearchProps = (
+  dataIndex: DataIndex,
+  handleSearch: (selectedKeys: string[], confirmCallBack: () => void) => void
+): TableColumnType<Task> => ({
   filterDropdown: ({
     setSelectedKeys,
     selectedKeys,
@@ -20,6 +23,7 @@ const getColumnSearchProps = (dataIndex: DataIndex): TableColumnType<Task> => ({
       confirm={confirm}
       close={close}
       clearFilters={clearFilters}
+      handleSearch={handleSearch}
     />
   ),
   filterIcon: (filtered: boolean) => (
@@ -38,7 +42,10 @@ const getColumnSearchProps = (dataIndex: DataIndex): TableColumnType<Task> => ({
   ),
 });
 
-export const getTableColumns = (users: User[]): TableColumnsType<Task> => [
+export const getTableColumns = (
+  users: User[],
+  handleSearch: (selectedKeys: string[], confirmCallBack: () => void) => void
+): TableColumnsType<Task> => [
   {
     title: "Name",
     dataIndex: "userId",
@@ -60,7 +67,7 @@ export const getTableColumns = (users: User[]): TableColumnsType<Task> => [
     title: "Task",
     dataIndex: "title",
     key: "title",
-    ...getColumnSearchProps("title"),
+    ...getColumnSearchProps("title", handleSearch),
     render: (_: string, task) => <span>{task.title}</span>,
   },
   {

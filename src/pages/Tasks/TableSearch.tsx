@@ -3,7 +3,6 @@ import { SearchOutlined } from "@ant-design/icons";
 import { DataIndex } from "./tasksTablePreprocessor";
 import { useRef } from "react";
 import { FilterConfirmProps, FilterRestProps } from "antd/es/table/interface";
-import useTasksData from "./useTasksData";
 
 const TableSearch = ({
   dataIndex,
@@ -12,6 +11,7 @@ const TableSearch = ({
   confirm,
   close,
   clearFilters,
+  handleSearch,
 }: {
   confirm: (param?: FilterConfirmProps) => void;
   dataIndex: DataIndex;
@@ -19,9 +19,9 @@ const TableSearch = ({
   setSelectedKeys: (selectedKeys: React.Key[]) => void;
   close: () => void;
   clearFilters?: (param?: FilterRestProps) => void;
+  handleSearch: (selectedKeys: string[], confirmCallBack: () => void) => void;
 }) => {
   const searchInput = useRef<InputRef>(null);
-  const { handleSearch } = useTasksData();
 
   const handleReset = (clearFilters: () => void) => {
     clearFilters();

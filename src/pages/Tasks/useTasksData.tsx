@@ -8,7 +8,7 @@ import {
 } from "@store/features/tasksSlice";
 import { useAppDispatch, useAppSelector } from "@store/hooks";
 import { TableProps } from "antd";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { FilterValue } from "antd/es/table/interface";
 import { head } from "lodash";
 import { getTableColumns } from "./tasksTablePreprocessor";
@@ -17,7 +17,9 @@ import users from "../../mockData/users.json";
 type Filter = FilterValue | null;
 const useTasksData = () => {
   const dispatch = useAppDispatch();
-  const { status } = useAppSelector((state) => state.tasks);
+  const { status, statusFilter, titleFilter, userIdFilter, currentPage } =
+    useAppSelector((state) => state.tasks);
+
   const [searchText, setSearchText] = useState("");
 
   useEffect(() => {
@@ -63,11 +65,50 @@ const useTasksData = () => {
     confirmCallBack();
   };
 
+  const columns = useMemo(
+    () =>
+      getTableColumns(users, handleSearch).map((column) => {
+        if (column.key === "userId" && userIdFilter !== null) {
+          return {
+            ...column,
+            filteredValue: [userIdFilter] as FilterValue,
+          };
+        }
+
+        if (column.key === "status") {
+          let filteredValue: FilterValue | null = null;
+          if (statusFilter === "completed") {
+            filteredValue = [true];
+          } else if (statusFilter === "incomplete") {
+            filteredValue = [false];
+          }
+
+          if (filteredValue) {
+            return {
+              ...column,
+              filteredValue,
+            };
+          }
+        }
+
+        if (column.key === "title" && titleFilter) {
+          return {
+            ...column,
+            filteredValue: [titleFilter] as FilterValue,
+          };
+        }
+
+        return column;
+      }),
+    [userIdFilter, statusFilter, titleFilter]
+  );
+
   return {
-    columns: getTableColumns(users),
+    columns,
     handleTableChange,
     searchText,
     handleSearch,
+    currentPage,
   };
 };
 

@@ -9,9 +9,9 @@ import * as api from "@lib/api";
 import { RootState } from "@store/store";
 
 export interface TableFilters {
-  status: "all" | "completed" | "incomplete";
-  userId: number | number[] | null;
-  title: string;
+  statusFilter: "all" | "completed" | "incomplete";
+  userIdFilter: number | number[] | null;
+  titleFilter: string;
 }
 
 interface TasksState {
@@ -19,7 +19,9 @@ interface TasksState {
   filteredTasks: Task[];
   status: "idle" | "loading" | "succeeded" | "failed";
   error: string | null;
-  filters: TableFilters;
+  statusFilter: "all" | "completed" | "incomplete";
+  userIdFilter: number | number[] | null;
+  titleFilter: string;
   currentPage: number;
 }
 
@@ -28,11 +30,9 @@ const initialState: TasksState = {
   filteredTasks: [],
   status: "idle",
   error: null,
-  filters: {
-    status: "all",
-    title: "",
-    userId: null,
-  },
+  statusFilter: "all",
+  titleFilter: "",
+  userIdFilter: null,
   currentPage: 1,
 };
 
@@ -55,17 +55,17 @@ const tasksSlice = createSlice({
       state,
       action: PayloadAction<"all" | "completed" | "incomplete">
     ) => {
-      state.filters.status = action.payload;
+      state.statusFilter = action.payload;
       state.currentPage = 1;
       applyFilters(state);
     },
     setTitleFilter: (state, action: PayloadAction<string>) => {
-      state.filters.title = action.payload;
+      state.titleFilter = action.payload;
       state.currentPage = 1;
       applyFilters(state);
     },
     setUserIdFilter: (state, action: PayloadAction<number | null>) => {
-      state.filters.userId = action.payload;
+      state.userIdFilter = action.payload;
       state.currentPage = 1;
       applyFilters(state);
     },
@@ -114,18 +114,18 @@ const tasksSlice = createSlice({
 const applyFilters = (state: TasksState) => {
   let filtered = [...state.tasks];
 
-  if (state.filters.status === "completed") {
+  if (state.statusFilter === "completed") {
     filtered = filtered.filter((task) => task.completed);
-  } else if (state.filters.status === "incomplete") {
+  } else if (state.statusFilter === "incomplete") {
     filtered = filtered.filter((task) => !task.completed);
   }
 
-  if (state.filters.userId !== null) {
-    filtered = filtered.filter((task) => task.userId === state.filters.userId);
+  if (state.userIdFilter !== null) {
+    filtered = filtered.filter((task) => task.userId === state.userIdFilter);
   }
 
-  if (state.filters.title) {
-    const titleLower = state.filters.title.toLowerCase();
+  if (state.titleFilter) {
+    const titleLower = state.titleFilter.toLowerCase();
     filtered = filtered.filter((task) =>
       task.title.toLowerCase().includes(titleLower)
     );
@@ -140,7 +140,18 @@ export const filteredTasks = createSelector(
   tasksState,
   (state) => state.filteredTasks
 );
-export const filters = createSelector(tasksState, (state) => state.filters);
+export const statusFilter = createSelector(
+  tasksState,
+  (state) => state.statusFilter
+);
+export const userIdFilter = createSelector(
+  tasksState,
+  (state) => state.userIdFilter
+);
+export const titleFilter = createSelector(
+  tasksState,
+  (state) => state.titleFilter
+);
 
 export const {
   setStatusFilter,
