@@ -10,7 +10,7 @@ export type TasksStorage = Store<Task>;
 
 interface PostsContextType {
   posts: PostsStorage | null;
-  error: string | null;
+  error: boolean;
   loading: boolean;
   deletePostId?: number;
   fetchPosts: (postId: number) => void;

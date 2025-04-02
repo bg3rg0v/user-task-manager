@@ -43,3 +43,6 @@ export interface Task {
   title: string;
   completed: boolean;
 }
+
+export const isApiError = (error: unknown): error is Error =>
+  error instanceof Error;

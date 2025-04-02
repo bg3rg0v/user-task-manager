@@ -11,13 +11,10 @@ import { useEffect } from "react";
 const Posts = () => {
   const { userId } = useParams();
   const { posts, loading, error, fetchPosts } = usePostsContext();
-
   useEffect(() => {
     if (!userId || isNaN(Number(userId))) return;
     if (posts?.[userId]) return;
-    (async (userId) => {
-      await fetchPosts(Number(userId));
-    })(userId);
+    fetchPosts(Number(userId));
   }, [userId, posts, fetchPosts]);
 
   // TODO: get from redux store
@@ -28,37 +25,39 @@ const Posts = () => {
   const dataSource = userId ? posts?.[userId] : [];
 
   return (
-    <List
-      itemLayout="vertical"
-      header={
-        <>
-          <UserForm
-            user={user!}
-            navigationLink={
-              <Link to={PATHS.USERS}>
-                <Button
-                  icon={<ArrowLeftOutlined />}
-                  iconPosition="start"
-                  type="text"
-                  htmlType="submit"
-                >
-                  Back
-                </Button>
-              </Link>
-            }
+    <>
+      <List
+        itemLayout="vertical"
+        header={
+          <>
+            <UserForm
+              user={user!}
+              navigationLink={
+                <Link to={PATHS.USERS}>
+                  <Button
+                    icon={<ArrowLeftOutlined />}
+                    iconPosition="start"
+                    type="text"
+                    htmlType="submit"
+                  >
+                    Back
+                  </Button>
+                </Link>
+              }
+            />
+          </>
+        }
+        bordered
+        dataSource={dataSource}
+        renderItem={(post) => (
+          <PostItem
+            key={`post-item-${post.id}`}
+            userId={Number(userId)}
+            post={post}
           />
-        </>
-      }
-      bordered
-      dataSource={dataSource}
-      renderItem={(post) => (
-        <PostItem
-          key={`post-item-${post.id}`}
-          userId={Number(userId)}
-          post={post}
-        />
-      )}
-    />
+        )}
+      />
+    </>
   );
 };
 
