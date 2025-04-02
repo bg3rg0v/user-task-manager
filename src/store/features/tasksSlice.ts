@@ -11,7 +11,7 @@ import { RootState } from "@store/store";
 export interface TableFilters {
   status: "all" | "completed" | "incomplete";
   userId: number | number[] | null;
-  // TODO: title
+  title: string;
 }
 
 interface TasksState {
@@ -19,7 +19,7 @@ interface TasksState {
   filteredTasks: Task[];
   status: "idle" | "loading" | "succeeded" | "failed";
   error: string | null;
-  filters: TableFilters & { title: string };
+  filters: TableFilters;
   currentPage: number;
 }
 
@@ -65,8 +65,6 @@ const tasksSlice = createSlice({
       applyFilters(state);
     },
     setUserIdFilter: (state, action: PayloadAction<number | null>) => {
-      console.log(action);
-
       state.filters.userId = action.payload;
       state.currentPage = 1;
       applyFilters(state);
@@ -124,6 +122,13 @@ const applyFilters = (state: TasksState) => {
 
   if (state.filters.userId !== null) {
     filtered = filtered.filter((task) => task.userId === state.filters.userId);
+  }
+
+  if (state.filters.title) {
+    const titleLower = state.filters.title.toLowerCase();
+    filtered = filtered.filter((task) =>
+      task.title.toLowerCase().includes(titleLower)
+    );
   }
 
   state.filteredTasks = filtered;

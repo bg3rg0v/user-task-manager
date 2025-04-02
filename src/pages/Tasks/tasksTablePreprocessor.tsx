@@ -1,11 +1,56 @@
 import { Task, User } from "@lib/interfaces";
-import { TableColumnsType } from "antd";
+import { TableColumnsType, TableColumnType } from "antd";
 import CompletionStatus from "./CompletionStatus";
+import { SearchOutlined } from "@ant-design/icons";
+import TableSearch from "./TableSearch";
 
-export const getTableColumns = (
-  users: User[],
-  tasks: Task[]
-): TableColumnsType<Task> => [
+export type DataIndex = keyof Task;
+const getColumnSearchProps = (dataIndex: DataIndex): TableColumnType<Task> => ({
+  filterDropdown: ({
+    setSelectedKeys,
+    selectedKeys,
+    confirm,
+    clearFilters,
+    close,
+  }) => (
+    <TableSearch
+      dataIndex={dataIndex}
+      selectedKeys={selectedKeys}
+      setSelectedKeys={setSelectedKeys}
+      confirm={confirm}
+      close={close}
+      clearFilters={clearFilters}
+    />
+  ),
+  filterIcon: (filtered: boolean) => (
+    <SearchOutlined style={{ color: filtered ? "#1677ff" : undefined }} />
+  ),
+  onFilter: (value, record) =>
+    record[dataIndex]
+      .toString()
+      .toLowerCase()
+      .includes((value as string).toLowerCase()),
+  // filterDropdownProps: {
+  //   onOpenChange(open) {
+  //     if (open) {
+  //       setTimeout(() => searchInput.current?.select(), 100);
+  //     }
+  //   },
+  // },
+  render: (text) => (
+    <div
+      style={{ backgroundColor: "#ffc069", padding: 0 }}
+      // searchWords={[searchText]}
+      // autoEscape
+      // textToHighlight={text ? text.toString() : ""}
+    >
+      {text}
+      {"searchText"}
+    </div>
+  ),
+});
+
+export const getTableColumns = (users: User[]): TableColumnsType<Task> => [
   {
     title: "Name",
     dataIndex: "userId",
@@ -28,17 +73,18 @@ export const getTableColumns = (
     title: "Task",
     dataIndex: "title",
     key: "title",
-    filterSearch: true,
-    filterMultiple: false,
-    filters: tasks.map((task: Task) => ({
-      text: task.title,
-      value: task.title,
-    })),
-    onFilter: (value, record) =>
-      record.title
-        .toString()
-        .toLowerCase()
-        .includes((value as string).toLowerCase()),
+    ...getColumnSearchProps("title"),
+    // filterSearch: true,
+    // filterMultiple: false,
+    // filters: tasks.map((task: Task) => ({
+    //   text: task.title,
+    //   value: task.title,
+    // })),
+    // onFilter: (value, record) =>
+    //   record.title
+    //     .toString()
+    //     .toLowerCase()
+    //     .includes((value as string).toLowerCase()),
     render: (_: string, task) => <span>{task.title}</span>,
   },
   {
