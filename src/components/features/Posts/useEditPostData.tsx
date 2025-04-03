@@ -5,7 +5,7 @@ import { usePostsContext } from "~/context/usePostsContext";
 
 type InputKey = "title" | "body";
 const useEditPostData = (userId: number, post: Post) => {
-  const { deletePost, deletePostId, savePost, updatePostLocally } =
+  const { deletePost, postIdAction, savePost, updatePostLocally } =
     usePostsContext();
 
   const [selectedPost, setSelectedPost] = useState({
@@ -45,7 +45,7 @@ const useEditPostData = (userId: number, post: Post) => {
           title: "Save",
           color: { tooltip: "blue", button: "primary" },
           actionHandler: updatePostAndSave,
-          loading: false,
+          loading: postIdAction.save === post.id,
           icon: (
             <SaveOutlined style={{ fontSize: isContentChanged ? 24 : 22 }} />
           ),
@@ -56,7 +56,7 @@ const useEditPostData = (userId: number, post: Post) => {
           title: "Delete",
           color: { tooltip: "red", button: "danger" },
           actionHandler: () => deletePost(userId, post.id),
-          loading: deletePostId === post.id,
+          loading: postIdAction.delete === post.id,
           icon: <DeleteOutlined style={{ fontSize: 22 }} />,
           disabled: false,
           isVisible: true,
@@ -73,7 +73,6 @@ const useEditPostData = (userId: number, post: Post) => {
       ] as const,
     [
       deletePost,
-      deletePostId,
       isContentChanged,
       post.id,
       postCancelHandler,
@@ -81,16 +80,18 @@ const useEditPostData = (userId: number, post: Post) => {
       userId,
       isEditable.body,
       isEditable.title,
+      postIdAction.delete,
+      postIdAction.save,
     ]
   );
 
   return {
     actions,
-    selectedPost,
     isEditable,
+    selectedPost,
+    isContentChanged,
     postCancelHandler,
     updatePostAndSave,
-    isContentChanged,
     deletePostHandler: () => deletePost(userId, post.id),
     focusChangeHandler,
     inputChangeHandler,

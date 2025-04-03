@@ -23,7 +23,6 @@ const EditUser = ({
   return (
     <Form
       form={form}
-      name={`user-form-${user.id}`}
       layout="vertical"
       wrapperCol={{ span: 24 }}
       onFinish={onFinish}

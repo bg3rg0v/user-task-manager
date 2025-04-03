@@ -1,20 +1,20 @@
 import { Table } from "antd";
 import { size } from "lodash";
-import useTasksData from "./useTasksData";
-import StatusWrapper from "@components/StatusWrapper";
+import StatusWrapper from "@components/ui/StatusWrapper";
+import useTasksData from "@hooks/useTasksData";
 
 const Tasks = () => {
   const {
+    isPageLoading,
+    error,
     columns,
-    isError,
-    isLoading,
     currentPage,
     filteredTasks,
     handleTableChange,
   } = useTasksData();
 
   return (
-    <StatusWrapper loading={isLoading} error={isError}>
+    <StatusWrapper loading={isPageLoading} error={error}>
       <Table
         bordered
         dataSource={filteredTasks.map((task) => ({

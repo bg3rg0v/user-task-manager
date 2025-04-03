@@ -1,14 +1,18 @@
 import React, { useCallback, useState } from "react";
 import { isApiError, Post } from "@lib/interfaces";
 import * as api from "@lib/api";
-import { PostsContext, PostsStorage } from "./usePostsContext";
+import { PostIdAction, PostsContext, PostsStorage } from "./usePostsContext";
 import { useNotificationContext } from "./useNotificationContext";
 
 const PostsProvider = ({ children }: { children: React.ReactNode }) => {
   const [posts, setPosts] = useState<PostsStorage | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<boolean>(false);
-  const [deletePostId, setDeletePostId] = useState<number | undefined>();
+  const [postIdAction, setPostIdAction] = useState<{
+    delete: PostIdAction;
+    save: PostIdAction;
+  }>({ delete: null, save: null });
+  // const [deletePostId, setDeletePostId] = useState<number | undefined>();
   const { notification } = useNotificationContext();
 
   const updatePostsStorage = useCallback(
@@ -58,16 +62,19 @@ const PostsProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const savePost = async (postId: number, postData: Partial<Post>) => {
+    setPostIdAction((prev) => ({ ...prev, save: postId }));
     try {
       await api.updatePost(postId, postData);
       notification("Post Saved", "success");
     } catch (err) {
       notification(isApiError(err) ? err.message : "Unknown Error", "error");
+    } finally {
+      setPostIdAction((prev) => ({ ...prev, save: null }));
     }
   };
 
   const deletePostRemote = async (userId: number, postId: number) => {
-    setDeletePostId(postId);
+    setPostIdAction((prev) => ({ ...prev, delete: postId }));
     try {
       await api.deletePost(postId);
       notification("Post Deleted");
@@ -76,8 +83,6 @@ const PostsProvider = ({ children }: { children: React.ReactNode }) => {
       );
     } catch (err) {
       notification(isApiError(err) ? err.message : "Unknown Error", "error");
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -85,7 +90,8 @@ const PostsProvider = ({ children }: { children: React.ReactNode }) => {
     posts,
     error,
     loading,
-    deletePostId,
+    postIdAction,
+
     fetchPosts,
     updatePostLocally,
     savePost,

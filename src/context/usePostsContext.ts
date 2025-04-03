@@ -1,6 +1,8 @@
 import { createContext, useContext } from "react";
 import { Post, Task } from "@lib/interfaces";
 
+export type PostIdAction = null | number;
+
 export type Store<T> = {
   [key: string]: T[];
 };
@@ -12,7 +14,7 @@ interface PostsContextType {
   posts: PostsStorage | null;
   error: boolean;
   loading: boolean;
-  deletePostId?: number;
+  postIdAction: { delete: PostIdAction; save: PostIdAction };
   fetchPosts: (postId: number) => void;
   savePost: (postId: number, postData: Partial<Post>) => Promise<void>;
   deletePost: (userId: number, postId: number) => Promise<void>;

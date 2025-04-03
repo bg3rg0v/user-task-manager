@@ -18,7 +18,7 @@ import { TableProps } from "antd";
 import { useEffect, useMemo } from "react";
 import { FilterValue } from "antd/es/table/interface";
 import { head } from "lodash";
-import { getTableColumns } from "./tasksTablePreprocessor";
+import { getTableColumns } from "../components/features/Tasks/tasksTablePreprocessor";
 import {
   selectFetchUsersStatus,
   selectUsers,
@@ -41,12 +41,12 @@ const useTasksData = () => {
   const currentPage = useAppSelector(selectCurrentPage);
   const filteredTasks = useAppSelector(selectFilteredTasks);
 
-  const isLoading =
+  const isPageLoading =
     fetchTasksStatus === "idle" ||
     fetchTasksStatus === "loading" ||
     fetchUsersStatus === "idle" ||
     fetchUsersStatus === "loading";
-  const isError = isTasksError || isUsersError;
+  const error = isTasksError || isUsersError;
 
   useEffect(() => {
     if (fetchUsersStatus === "idle") {
@@ -126,9 +126,9 @@ const useTasksData = () => {
   );
 
   return {
+    error,
     columns,
-    isError,
-    isLoading,
+    isPageLoading,
     currentPage,
     filteredTasks,
     handleTableChange,

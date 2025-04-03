@@ -1,32 +1,13 @@
 import { List } from "antd";
-import UserItem from "@components/Users/UserItem";
-import { useAppDispatch, useAppSelector } from "@store/hooks";
-import { useEffect } from "react";
-import {
-  fetchUsers,
-  selectError,
-  selectFetchUsersStatus,
-  selectUsers,
-} from "@store/features/usersSlice";
-import StatusWrapper from "@components/StatusWrapper";
+import UserItem from "@components/features/Users/UserItem";
+import StatusWrapper from "@components/ui/StatusWrapper";
+import useUsersData from "@hooks/useUsersData";
 
 const Users = () => {
-  const dispatch = useAppDispatch();
-  const users = useAppSelector(selectUsers);
-  const error = useAppSelector(selectError);
-  const fetchUsersStatus = useAppSelector(selectFetchUsersStatus);
-
-  useEffect(() => {
-    if (fetchUsersStatus === "idle") {
-      dispatch(fetchUsers());
-    }
-  }, [dispatch, fetchUsersStatus]);
+  const { isPageLoading, error, users } = useUsersData();
 
   return (
-    <StatusWrapper
-      error={error}
-      loading={fetchUsersStatus === "idle" || fetchUsersStatus === "loading"}
-    >
+    <StatusWrapper error={error} loading={isPageLoading}>
       <List
         itemLayout="vertical"
         dataSource={users}

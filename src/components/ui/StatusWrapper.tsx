@@ -1,5 +1,6 @@
 import type React from "react";
 import LoadingSpinner from "./LoadingSpinner";
+import { Result } from "antd";
 
 export const StatusWrapper = ({
   children,
@@ -15,7 +16,7 @@ export const StatusWrapper = ({
   }
 
   if (error) {
-    <>Error</>;
+    return <Result title="Error Page" status="error" />;
   }
 
   return <>{children}</>;

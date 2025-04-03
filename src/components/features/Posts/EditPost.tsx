@@ -1,4 +1,4 @@
-import TooltipButton from "@components/TooltipButton";
+import TooltipButton from "@components/ui/TooltipButton";
 import { Input, List, Space } from "antd";
 import { Post } from "~/lib/interfaces";
 import useEditPostData from "./useEditPostData";
@@ -6,8 +6,8 @@ import useEditPostData from "./useEditPostData";
 const EditPost = ({ userId, post }: { userId: number; post: Post }) => {
   const {
     actions,
-    selectedPost,
     isEditable,
+    selectedPost,
     focusChangeHandler,
     inputChangeHandler,
   } = useEditPostData(userId, post);
@@ -18,21 +18,30 @@ const EditPost = ({ userId, post }: { userId: number; post: Post }) => {
         <Space size="middle" align="end">
           {actions
             .filter((action) => action.isVisible)
-            .map(({ title, color, icon, loading, actionHandler, disabled }) => (
-              <TooltipButton
-                key={title}
-                disabled={disabled}
-                variant="text"
-                tooltipprops={{
-                  title: title,
-                  color: color.tooltip,
-                }}
-                color={color.button}
-                icon={icon}
-                onClick={actionHandler}
-                loading={loading}
-              />
-            ))}
+            .map(
+              ({
+                title,
+                color,
+                icon,
+                loading: isButtonLoading,
+                actionHandler,
+                disabled,
+              }) => (
+                <TooltipButton
+                  key={title}
+                  disabled={disabled}
+                  variant="text"
+                  tooltipprops={{
+                    title: title,
+                    color: color.tooltip,
+                  }}
+                  color={color.button}
+                  icon={icon}
+                  onClick={actionHandler}
+                  loading={isButtonLoading}
+                />
+              )
+            )}
         </Space>,
       ]}
     >

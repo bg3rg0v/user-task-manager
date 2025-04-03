@@ -1,3 +1,5 @@
+import { useState } from "react";
+import { isEmpty } from "lodash";
 import { User } from "@lib/interfaces";
 import {
   selectUpdateUserStatus,
@@ -6,9 +8,8 @@ import {
 } from "@store/features/usersSlice";
 import { useAppDispatch, useAppSelector } from "@store/hooks";
 import { useForm } from "antd/es/form/Form";
-import { isEmpty } from "lodash";
-import { useState } from "react";
 import { useNotificationContext } from "~/context/useNotificationContext";
+
 interface FieldData {
   username: string;
   email: string;
