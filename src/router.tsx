@@ -15,19 +15,19 @@ const router = createBrowserRouter([
   {
     element: <AppLayout />,
     children: [
+      ...[PATHS.HOME, PATHS.USERS].map((path) => ({
+        path,
+        element: (
+          <Suspense fallback={<LoadingSpinner />}>
+            <Users />
+          </Suspense>
+        ),
+      })),
       {
         path: PATHS.TASKS,
         element: (
           <Suspense fallback={<LoadingSpinner />}>
             <Tasks />
-          </Suspense>
-        ),
-      },
-      {
-        path: PATHS.USERS,
-        element: (
-          <Suspense fallback={<LoadingSpinner />}>
-            <Users />
           </Suspense>
         ),
       },
