@@ -12,11 +12,10 @@ import { usePostsContext } from "~/context/usePostsContext";
 
 const usePostsData = () => {
   const dispatch = useAppDispatch();
-  const params = useParams<{ userId: string }>();
-  const userId = Number(params.userId);
+  const { userId } = useParams();
   const users = useAppSelector(selectUsers);
   const fetchUsersStatus = useAppSelector(selectFetchUsersStatus);
-  const user = users.find((user) => user.id === userId);
+  const user = users.find((user) => user.id.toString() === userId);
   const {
     posts,
     loading: isPostsLoading,
@@ -33,15 +32,15 @@ const usePostsData = () => {
       dispatch(fetchUsers());
     }
 
-    if (!userId || isNaN(userId)) return;
-    if (posts?.[userId]) return;
-    fetchPosts(Number(userId));
+    if (userId && !posts?.[userId]) {
+      fetchPosts(userId);
+    }
   }, [userId, posts, fetchUsersStatus, fetchPosts, dispatch]);
 
   const noUserFoundFallback = (
     <Result
       icon={<InfoCircleOutlined />}
-      title={`User with ID ${params.userId} does not exist`}
+      title={`User with ID ${userId} does not exist`}
     />
   );
 

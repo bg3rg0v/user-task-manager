@@ -3,7 +3,7 @@ import {
   fetchTasks,
   selectCurrentPage,
   selectError as selectTasksError,
-  selectStatus,
+  selectFetchTasksStatus,
   selectStatusFilter,
   selectTitleFilter,
   selectUserIdFilter,
@@ -12,6 +12,8 @@ import {
   setTitleFilter,
   setUserIdFilter,
   selectFilteredTasks,
+  resetAllFilters,
+  selectIsFilterApplied,
 } from "@store/features/tasksSlice";
 import { useAppDispatch, useAppSelector } from "@store/hooks";
 import { TableProps } from "antd";
@@ -33,13 +35,14 @@ const useTasksData = () => {
   const isUsersError = useAppSelector(selectUsersError);
   const users = useAppSelector(selectUsers);
 
-  const fetchTasksStatus = useAppSelector(selectStatus);
+  const fetchTasksStatus = useAppSelector(selectFetchTasksStatus);
   const isTasksError = useAppSelector(selectTasksError);
   const statusFilter = useAppSelector(selectStatusFilter);
   const titleFilter = useAppSelector(selectTitleFilter);
   const userIdFilter = useAppSelector(selectUserIdFilter);
   const currentPage = useAppSelector(selectCurrentPage);
   const filteredTasks = useAppSelector(selectFilteredTasks);
+  const isFilterApplied = useAppSelector(selectIsFilterApplied);
 
   const isPageLoading =
     fetchTasksStatus === "idle" ||
@@ -87,6 +90,10 @@ const useTasksData = () => {
     }
   };
 
+  const handleResetFilters = () => {
+    dispatch(resetAllFilters());
+  };
+
   const columns = useMemo(
     () =>
       getTableColumns(users).map((column) => {
@@ -122,7 +129,9 @@ const useTasksData = () => {
     isPageLoading,
     currentPage,
     filteredTasks,
+    isFilterApplied,
     handleTableChange,
+    handleResetFilters,
   };
 };
 

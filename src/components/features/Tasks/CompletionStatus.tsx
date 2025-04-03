@@ -1,27 +1,38 @@
+import LoadingSpinner from "@components/ui/LoadingSpinner";
 import { Task } from "@lib/interfaces";
-import { updateTaskLocal, updateTaskStatus } from "@store/features/tasksSlice";
-import { useAppDispatch } from "@store/hooks";
-import { Checkbox, CheckboxChangeEvent } from "antd";
+import { updateTask, selectTaskUpdateId } from "@store/features/tasksSlice";
+import { useAppDispatch, useAppSelector } from "@store/hooks";
+import { Checkbox, type CheckboxChangeEvent } from "antd";
 import { useNotificationContext } from "~/context/useNotificationContext";
 
 const CompletionStatus = ({ task }: { task: Task }) => {
   const dispatch = useAppDispatch();
   const { notification } = useNotificationContext();
+  const updateTaskId = useAppSelector(selectTaskUpdateId);
+  const isUpdateTaskLoading = updateTaskId === task.id;
 
-  const handleTaskStatusChange = (task: Task, e: CheckboxChangeEvent) => {
+  const handleTaskStatusChange = async (task: Task, e: CheckboxChangeEvent) => {
     const completed = e.target.checked;
-    dispatch(updateTaskLocal({ taskId: task.id, completed }));
-    dispatch(updateTaskStatus({ taskId: task.id, completed }));
+    await dispatch(updateTask({ taskId: task.id, completed }));
     notification(
       `Task ${task.id} ${completed ? "completed" : "status updated"}`,
       completed ? "success" : "info"
     );
   };
 
-  return (
+  return isUpdateTaskLoading ? (
+    <LoadingSpinner size="small" />
+  ) : (
     <Checkbox
       checked={task.completed}
-      onChange={(e) => handleTaskStatusChange(task, e)}
+      onChange={async (e) => {
+        try {
+          await handleTaskStatusChange(task, e);
+        } catch (error) {
+          console.log(error);
+        }
+      }}
+      disabled={isUpdateTaskLoading}
     />
   );
 };

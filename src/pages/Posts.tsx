@@ -41,7 +41,7 @@ const Posts = () => {
           renderItem={(post) => (
             <EditPost
               key={`post-item-${post.id}`}
-              userId={post.userId}
+              userId={post.userId.toString()}
               post={post}
             />
           )}

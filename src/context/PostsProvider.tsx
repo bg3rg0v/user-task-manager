@@ -12,11 +12,10 @@ const PostsProvider = ({ children }: { children: React.ReactNode }) => {
     delete: PostIdAction;
     save: PostIdAction;
   }>({ delete: null, save: null });
-  // const [deletePostId, setDeletePostId] = useState<number | undefined>();
   const { notification } = useNotificationContext();
 
   const updatePostsStorage = useCallback(
-    (userId: number, operation: (userPosts: Post[]) => Post[]) => {
+    (userId: string, operation: (userPosts: Post[]) => Post[]) => {
       setPosts((prevPosts) => {
         if (!prevPosts) return null;
 
@@ -37,7 +36,7 @@ const PostsProvider = ({ children }: { children: React.ReactNode }) => {
   );
 
   const fetchPosts = useCallback(
-    async (userId: string | number) => {
+    async (userId: string) => {
       setLoading(true);
       try {
         const postsData = await api.getUserPosts(userId);
@@ -45,17 +44,16 @@ const PostsProvider = ({ children }: { children: React.ReactNode }) => {
           if (!prev) return { [userId]: postsData };
           return { ...prev, [userId]: postsData };
         });
+        setLoading(false);
       } catch (err) {
         setError(true);
         notification(isApiError(err) ? err.message : "Unknown Error", "error");
-      } finally {
-        setLoading(false);
       }
     },
     [notification]
   );
 
-  const updatePostLocally = (userId: number, updatedPost: Post) => {
+  const updatePostLocally = (userId: string, updatedPost: Post) => {
     updatePostsStorage(userId, (userPosts) =>
       userPosts.map((post) => (post.id === updatedPost.id ? updatedPost : post))
     );
@@ -73,7 +71,7 @@ const PostsProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  const deletePostRemote = async (userId: number, postId: number) => {
+  const deletePostRemote = async (userId: string, postId: number) => {
     setPostIdAction((prev) => ({ ...prev, delete: postId }));
     try {
       await api.deletePost(postId);
@@ -83,6 +81,8 @@ const PostsProvider = ({ children }: { children: React.ReactNode }) => {
       );
     } catch (err) {
       notification(isApiError(err) ? err.message : "Unknown Error", "error");
+    } finally {
+      setPostIdAction((prev) => ({ ...prev, delete: null }));
     }
   };
 

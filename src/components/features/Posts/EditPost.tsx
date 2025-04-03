@@ -3,9 +3,10 @@ import { Input, List, Space } from "antd";
 import { Post } from "~/lib/interfaces";
 import useEditPostData from "./useEditPostData";
 
-const EditPost = ({ userId, post }: { userId: number; post: Post }) => {
+const EditPost = ({ userId, post }: { userId: string; post: Post }) => {
   const {
     actions,
+    isValid,
     isEditable,
     selectedPost,
     focusChangeHandler,
@@ -48,6 +49,8 @@ const EditPost = ({ userId, post }: { userId: number; post: Post }) => {
       <List.Item.Meta
         title={
           <Input
+            placeholder={isValid ? "" : "Post title is required"}
+            status={isValid ? "" : "error"}
             onFocus={() => focusChangeHandler("title")}
             onChange={(e) => inputChangeHandler("title", e.target.value)}
             style={{ cursor: isEditable.title ? "default" : "pointer" }}
@@ -59,6 +62,8 @@ const EditPost = ({ userId, post }: { userId: number; post: Post }) => {
         }
         description={
           <Input.TextArea
+            placeholder={isValid ? "" : "Post body is required"}
+            status={isValid ? "" : "error"}
             onFocus={() => focusChangeHandler("body")}
             onChange={(e) => inputChangeHandler("body", e.target.value)}
             autoSize={{ minRows: 3, maxRows: 25 }}

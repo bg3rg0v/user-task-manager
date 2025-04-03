@@ -1,4 +1,4 @@
-import { Table } from "antd";
+import { Button, Space, Table } from "antd";
 import { size } from "lodash";
 import StatusWrapper from "@components/ui/StatusWrapper";
 import useTasksData from "@hooks/useTasksData";
@@ -11,10 +11,21 @@ const Tasks = () => {
     currentPage,
     filteredTasks,
     handleTableChange,
+    isFilterApplied,
+    handleResetFilters,
   } = useTasksData();
 
   return (
     <StatusWrapper loading={isPageLoading} error={error}>
+      <Space style={{ marginBottom: 16 }}>
+        <Button
+          disabled={!isFilterApplied}
+          type="primary"
+          onClick={handleResetFilters}
+        >
+          Reset Data
+        </Button>
+      </Space>
       <Table
         bordered
         dataSource={filteredTasks.map((task) => ({

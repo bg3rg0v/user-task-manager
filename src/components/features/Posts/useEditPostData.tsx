@@ -4,7 +4,7 @@ import { useCallback, useMemo, useState } from "react";
 import { usePostsContext } from "~/context/usePostsContext";
 
 type InputKey = "title" | "body";
-const useEditPostData = (userId: number, post: Post) => {
+const useEditPostData = (userId: string, post: Post) => {
   const { deletePost, postIdAction, savePost, updatePostLocally } =
     usePostsContext();
 
@@ -12,6 +12,7 @@ const useEditPostData = (userId: number, post: Post) => {
     title: post.title,
     body: post.body,
   });
+  const isValid = selectedPost.title !== "" && selectedPost.body !== "";
 
   const [isEditable, setIsEditable] = useState({ title: false, body: false });
 
@@ -49,7 +50,7 @@ const useEditPostData = (userId: number, post: Post) => {
           icon: (
             <SaveOutlined style={{ fontSize: isContentChanged ? 24 : 22 }} />
           ),
-          disabled: !isContentChanged,
+          disabled: !isContentChanged || !isValid,
           isVisible: true,
         },
         {
@@ -82,17 +83,15 @@ const useEditPostData = (userId: number, post: Post) => {
       isEditable.title,
       postIdAction.delete,
       postIdAction.save,
+      isValid,
     ]
   );
 
   return {
     actions,
+    isValid,
     isEditable,
     selectedPost,
-    isContentChanged,
-    postCancelHandler,
-    updatePostAndSave,
-    deletePostHandler: () => deletePost(userId, post.id),
     focusChangeHandler,
     inputChangeHandler,
   };

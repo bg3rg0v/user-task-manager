@@ -15,10 +15,10 @@ interface PostsContextType {
   error: boolean;
   loading: boolean;
   postIdAction: { delete: PostIdAction; save: PostIdAction };
-  fetchPosts: (postId: number) => void;
+  fetchPosts: (userId: string) => void;
   savePost: (postId: number, postData: Partial<Post>) => Promise<void>;
-  deletePost: (userId: number, postId: number) => Promise<void>;
-  updatePostLocally: (userId: number, updatedPost: Post) => void;
+  deletePost: (userId: string, postId: number) => Promise<void>;
+  updatePostLocally: (userId: string, updatedPost: Post) => void;
 }
 
 export const PostsContext = createContext<PostsContextType | undefined>(
