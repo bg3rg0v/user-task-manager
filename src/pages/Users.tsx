@@ -1,29 +1,38 @@
 import { List } from "antd";
 import UserItem from "@components/Users/UserItem";
 import { useAppDispatch, useAppSelector } from "@store/hooks";
-import LoadingSpinner from "@components/LoadingSpinner";
 import { useEffect } from "react";
-import { fetchUsers } from "@store/features/usersSlice";
+import {
+  fetchUsers,
+  selectError,
+  selectFetchUsersStatus,
+  selectUsers,
+} from "@store/features/usersSlice";
+import StatusWrapper from "@components/StatusWrapper";
 
 const Users = () => {
   const dispatch = useAppDispatch();
-  const { status, error, users } = useAppSelector((state) => state.users);
+  const users = useAppSelector(selectUsers);
+  const error = useAppSelector(selectError);
+  const fetchUsersStatus = useAppSelector(selectFetchUsersStatus);
 
   useEffect(() => {
-    if (status === "idle") {
+    if (fetchUsersStatus === "idle") {
       dispatch(fetchUsers());
     }
-  }, [dispatch, status]);
-
-  if (status === "idle" || status === "loading") return <LoadingSpinner />;
-  if (error) return <>Error</>;
+  }, [dispatch, fetchUsersStatus]);
 
   return (
-    <List
-      itemLayout="vertical"
-      dataSource={users}
-      renderItem={(user) => <UserItem user={user} />}
-    />
+    <StatusWrapper
+      error={error}
+      loading={fetchUsersStatus === "idle" || fetchUsersStatus === "loading"}
+    >
+      <List
+        itemLayout="vertical"
+        dataSource={users}
+        renderItem={(user) => <UserItem user={user} />}
+      />
+    </StatusWrapper>
   );
 };
 

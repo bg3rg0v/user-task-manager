@@ -76,19 +76,16 @@ export async function getUser(userId: number): Promise<User> {
   return response.json();
 }
 
-export async function updateUser(
-  userId: number,
-  userData: Partial<User>
-): Promise<User> {
-  const response = await fetch(`${API_BASE_URL}/users/${userId}`, {
+export async function updateUser(updatedUser: User): Promise<User> {
+  const response = await fetch(`${API_BASE_URL}/users/${updatedUser.id}`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(userData),
+    body: JSON.stringify(updatedUser),
   });
   if (!response.ok) {
-    throw new Error(`Failed to update user with ID ${userId}`);
+    throw new Error(`Failed to update user with ID ${updatedUser.id}`);
   }
   return response.json();
 }

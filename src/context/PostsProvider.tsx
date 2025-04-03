@@ -2,14 +2,14 @@ import React, { useCallback, useState } from "react";
 import { isApiError, Post } from "@lib/interfaces";
 import * as api from "@lib/api";
 import { PostsContext, PostsStorage } from "./usePostsContext";
-import useNotification from "@hooks/useNotification";
+import { useNotificationContext } from "./useNotificationContext";
 
 const PostsProvider = ({ children }: { children: React.ReactNode }) => {
   const [posts, setPosts] = useState<PostsStorage | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<boolean>(false);
   const [deletePostId, setDeletePostId] = useState<number | undefined>();
-  const { contextHolder, notification } = useNotification();
+  const { notification } = useNotificationContext();
 
   const updatePostsStorage = useCallback(
     (userId: number, operation: (userPosts: Post[]) => Post[]) => {
@@ -93,10 +93,7 @@ const PostsProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <PostsContext.Provider value={value}>
-      {contextHolder}
-      {children}
-    </PostsContext.Provider>
+    <PostsContext.Provider value={value}>{children}</PostsContext.Provider>
   );
 };
 

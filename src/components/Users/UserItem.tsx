@@ -14,7 +14,7 @@ const UserItem = ({ user }: { user: User }) => (
       )}
       items={[
         {
-          key: user.email,
+          key: user.id,
           label: <Typography.Text>{user.name}</Typography.Text>,
           children: user && (
             <EditUser

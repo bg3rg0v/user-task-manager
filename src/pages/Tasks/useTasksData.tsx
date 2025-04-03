@@ -1,10 +1,17 @@
 import { Task } from "@lib/interfaces";
 import {
   fetchTasks,
+  selectCurrentPage,
+  selectError as selectTasksError,
+  selectStatus,
+  selectStatusFilter,
+  selectTitleFilter,
+  selectUserIdFilter,
   setCurrentPage,
   setStatusFilter,
   setTitleFilter,
   setUserIdFilter,
+  selectFilteredTasks,
 } from "@store/features/tasksSlice";
 import { useAppDispatch, useAppSelector } from "@store/hooks";
 import { TableProps } from "antd";
@@ -12,21 +19,46 @@ import { useEffect, useMemo, useState } from "react";
 import { FilterValue } from "antd/es/table/interface";
 import { head } from "lodash";
 import { getTableColumns } from "./tasksTablePreprocessor";
-import users from "../../mockData/users.json";
+import {
+  selectFetchUsersStatus,
+  selectUsers,
+  fetchUsers,
+  selectError as selectUsersError,
+} from "@store/features/usersSlice";
 
 type Filter = FilterValue | null;
 const useTasksData = () => {
   const dispatch = useAppDispatch();
-  const { status, statusFilter, titleFilter, userIdFilter, currentPage } =
-    useAppSelector((state) => state.tasks);
+  const fetchUsersStatus = useAppSelector(selectFetchUsersStatus);
+  const isUsersError = useAppSelector(selectUsersError);
+  const users = useAppSelector(selectUsers);
+
+  const fetchTasksStatus = useAppSelector(selectStatus);
+  const isTasksError = useAppSelector(selectTasksError);
+  const statusFilter = useAppSelector(selectStatusFilter);
+  const titleFilter = useAppSelector(selectTitleFilter);
+  const userIdFilter = useAppSelector(selectUserIdFilter);
+  const currentPage = useAppSelector(selectCurrentPage);
+  const filteredTasks = useAppSelector(selectFilteredTasks);
+
+  const isLoading =
+    fetchTasksStatus === "idle" ||
+    fetchTasksStatus === "loading" ||
+    fetchUsersStatus === "idle" ||
+    fetchUsersStatus === "loading";
+  const isError = isTasksError || isUsersError;
 
   const [searchText, setSearchText] = useState("");
 
   useEffect(() => {
-    if (status === "idle") {
+    if (fetchUsersStatus === "idle") {
+      dispatch(fetchUsers());
+    }
+
+    if (fetchTasksStatus === "idle") {
       dispatch(fetchTasks());
     }
-  }, [dispatch, status]);
+  }, [dispatch, fetchUsersStatus, fetchTasksStatus]);
 
   const handleUserIdFilterChange = (userId: Filter) => {
     const userIdFilter = head(userId) || null;
@@ -100,15 +132,16 @@ const useTasksData = () => {
 
         return column;
       }),
-    [userIdFilter, statusFilter, titleFilter]
+    [users, userIdFilter, statusFilter, titleFilter]
   );
 
   return {
     columns,
-    handleTableChange,
-    searchText,
-    handleSearch,
+    isError,
+    isLoading,
     currentPage,
+    filteredTasks,
+    handleTableChange,
   };
 };
 

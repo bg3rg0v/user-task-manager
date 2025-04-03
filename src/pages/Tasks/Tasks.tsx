@@ -1,38 +1,37 @@
-import { Table, Empty } from "antd";
-import LoadingSpinner from "@components/LoadingSpinner";
-import { isEmpty, size } from "lodash";
+import { Table } from "antd";
+import { size } from "lodash";
 import useTasksData from "./useTasksData";
-import { useAppSelector } from "@store/hooks";
+import StatusWrapper from "@components/StatusWrapper";
 
 const Tasks = () => {
-  const { status, error, filteredTasks, currentPage } = useAppSelector(
-    (state) => state.tasks
-  );
-  const { columns, handleTableChange } = useTasksData();
-
-  if (status === "idle" || status === "loading") return <LoadingSpinner />;
-  if (error) return <>Error</>;
+  const {
+    columns,
+    isError,
+    isLoading,
+    currentPage,
+    filteredTasks,
+    handleTableChange,
+  } = useTasksData();
 
   return (
-    <>
-      {isEmpty(filteredTasks) ? (
-        <Empty description={`No Tasks Found`} />
-      ) : (
-        <Table
-          bordered
-          dataSource={filteredTasks}
-          columns={columns}
-          pagination={{
-            align: "start",
-            current: currentPage,
-            pageSize: 10,
-            total: size(filteredTasks),
-            showSizeChanger: false,
-          }}
-          onChange={handleTableChange}
-        />
-      )}
-    </>
+    <StatusWrapper loading={isLoading} error={isError}>
+      <Table
+        bordered
+        dataSource={filteredTasks.map((task) => ({
+          ...task,
+          key: `task-${task.id}`,
+        }))}
+        columns={columns}
+        pagination={{
+          align: "start",
+          current: currentPage,
+          pageSize: 10,
+          total: size(filteredTasks),
+          showSizeChanger: false,
+        }}
+        onChange={handleTableChange}
+      />
+    </StatusWrapper>
   );
 };
 

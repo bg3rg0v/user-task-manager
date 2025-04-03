@@ -2,25 +2,27 @@ import {
   createSlice,
   createAsyncThunk,
   type PayloadAction,
-  createSelector,
 } from "@reduxjs/toolkit";
 import type { User } from "@lib/interfaces";
 import * as api from "@lib/api";
-import { RootState } from "@store/store";
+import { RootState, StoreStatusType } from "@store/store";
 
 interface UsersState {
   users: User[];
-  status: "idle" | "loading" | "succeeded" | "failed";
-  error: string | null;
+  error: boolean;
   editingUserId: number | null;
   originalUserData: User | null;
   selectedUserId: number | null;
+  status: {
+    fetchUsers: StoreStatusType;
+    updateUser: StoreStatusType;
+  };
 }
 
 const initialState: UsersState = {
   users: [],
-  status: "idle",
-  error: null,
+  status: { fetchUsers: "idle", updateUser: "idle" },
+  error: false,
   editingUserId: null,
   originalUserData: null,
   selectedUserId: null,
@@ -33,8 +35,7 @@ export const fetchUsers = createAsyncThunk(
 
 export const updateUser = createAsyncThunk(
   "users/updateUser",
-  async ({ userId, userData }: { userId: number; userData: Partial<User> }) =>
-    await api.updateUser(userId, userData)
+  async (updatedUser: User) => await api.updateUser(updatedUser)
 );
 
 const usersSlice = createSlice({
@@ -44,48 +45,32 @@ const usersSlice = createSlice({
     setSelectedUserId: (state, action: PayloadAction<number>) => {
       state.selectedUserId = action.payload;
     },
-    startEditingUser: (state, action: PayloadAction<number>) => {
-      state.editingUserId = action.payload;
-      state.originalUserData =
-        state.users.find((user) => user.id === action.payload) || null;
-    },
-    cancelEditingUser: (state) => {
-      if (state.editingUserId && state.originalUserData) {
-        const index = state.users.findIndex(
-          (user) => user.id === state.editingUserId
-        );
-        if (index !== -1) {
-          state.users[index] = state.originalUserData;
-        }
-      }
-      state.editingUserId = null;
-      state.originalUserData = null;
-    },
-    updateUserLocal: (
-      state,
-      action: PayloadAction<{ userId: number; userData: Partial<User> }>
-    ) => {
-      const { userId, userData } = action.payload;
-      const index = state.users.findIndex((user) => user.id === userId);
+    updateUserLocal: (state, action: PayloadAction<User>) => {
+      const updatedUser = action.payload;
+      const index = state.users.findIndex((user) => user.id === updatedUser.id);
       if (index !== -1) {
-        state.users[index] = { ...state.users[index], ...userData };
+        state.users[index] = { ...state.users[index], ...updatedUser };
       }
     },
   },
   extraReducers: (builder) => {
     builder
       .addCase(fetchUsers.pending, (state) => {
-        state.status = "loading";
+        state.status.fetchUsers = "loading";
       })
       .addCase(fetchUsers.fulfilled, (state, action) => {
-        state.status = "succeeded";
+        state.status.fetchUsers = "success";
         state.users = action.payload;
       })
-      .addCase(fetchUsers.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.error.message || "Failed to fetch users";
+      .addCase(fetchUsers.rejected, (state) => {
+        state.status.fetchUsers = "failed";
+        state.error = true;
+      })
+      .addCase(updateUser.pending, (state) => {
+        state.status.updateUser = "loading";
       })
       .addCase(updateUser.fulfilled, (state, action) => {
+        state.status.updateUser = "success";
         const updatedUser = action.payload;
         const index = state.users.findIndex(
           (user) => user.id === updatedUser.id
@@ -99,18 +84,13 @@ const usersSlice = createSlice({
   },
 });
 
-export const usersState = (state: RootState) => state.users;
-export const users = createSelector(usersState, (state) => state.users);
-export const getUser = (userId: number) =>
-  createSelector(usersState, (state) => {
-    return state.users.find((user) => user.id === userId);
-  });
-export const status = createSelector(usersState, (state) => state.status);
-export const originalUserData = createSelector(
-  usersState,
-  (state) => state.originalUserData
-);
-export const { startEditingUser, cancelEditingUser, updateUserLocal } =
-  usersSlice.actions;
+export const selectUsers = (state: RootState) => state.users.users;
+export const selectError = (state: RootState) => state.users.error;
+export const selectFetchUsersStatus = (state: RootState) =>
+  state.users.status.fetchUsers;
+export const selectUpdateUserStatus = (state: RootState) =>
+  state.users.status.updateUser;
+
+export const { updateUserLocal } = usersSlice.actions;
 
 export default usersSlice.reducer;

@@ -9,6 +9,7 @@ const Users = lazy(() => import("@pages/Users"));
 const Posts = lazy(() => import("@pages/Posts"));
 const Tasks = lazy(() => import("@pages/Tasks/Tasks"));
 import { StoreProvider } from "@store/StoreProvider";
+import NotificationProvider from "./context/NotificationProvider";
 const router = createBrowserRouter([
   {
     element: <AppLayout />,
@@ -51,8 +52,10 @@ const router = createBrowserRouter([
 
 export const AppRouter = () => (
   <StoreProvider>
-    <PostsProvider>
-      <RouterProvider router={router} />
-    </PostsProvider>
+    <NotificationProvider>
+      <PostsProvider>
+        <RouterProvider router={router} />
+      </PostsProvider>
+    </NotificationProvider>
   </StoreProvider>
 );

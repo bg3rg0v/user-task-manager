@@ -1,7 +1,14 @@
 import { User } from "@lib/interfaces";
+import {
+  selectUpdateUserStatus,
+  updateUser,
+  updateUserLocal,
+} from "@store/features/usersSlice";
+import { useAppDispatch, useAppSelector } from "@store/hooks";
 import { useForm } from "antd/es/form/Form";
 import { isEmpty } from "lodash";
 import { useState } from "react";
+import { useNotificationContext } from "~/context/useNotificationContext";
 interface FieldData {
   username: string;
   email: string;
@@ -16,8 +23,12 @@ const initialFormStatus = {
 };
 
 const useEditUserData = (user: User) => {
-  const [form] = useForm<FieldData>();
+  const dispatch = useAppDispatch();
+  const { notification } = useNotificationContext();
+  const updateUserStatus = useAppSelector(selectUpdateUserStatus);
+  const isUserUpdating = updateUserStatus === "loading";
 
+  const [form] = useForm<FieldData>();
   const [formStatus, setFormStatus] = useState(initialFormStatus);
 
   const originalValues: FieldData = {
@@ -49,9 +60,7 @@ const useEditUserData = (user: User) => {
     setFormStatus((prev) => ({ ...prev, isChanged }));
   };
 
-  const onFinish = (values: FieldData) => {
-    console.log("Submitted values:", values);
-
+  const onFinish = async (values: FieldData) => {
     const updatedUser = {
       ...user,
       username: values.username,
@@ -63,8 +72,10 @@ const useEditUserData = (user: User) => {
         city: values.city,
       },
     };
-
-    console.log("Updated user:", updatedUser);
+    dispatch(updateUserLocal(updatedUser));
+    await dispatch(updateUser(updatedUser));
+    notification("User Updated");
+    setFormStatus({ isChanged: false, isValid: false });
   };
 
   const handleReset = () => {
@@ -79,6 +90,7 @@ const useEditUserData = (user: User) => {
     handleReset,
     onFinish,
     handleFieldsChange,
+    isUserUpdating,
   };
 };
 

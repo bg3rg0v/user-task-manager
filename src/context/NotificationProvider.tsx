@@ -1,6 +1,7 @@
+import React, { useCallback } from "react";
 import { message } from "antd";
 import { NoticeType } from "antd/es/message/interface";
-import { useCallback } from "react";
+import { NotificationContext } from "./useNotificationContext";
 
 const notificationConfig = {
   style: {
@@ -10,7 +11,8 @@ const notificationConfig = {
     top: "calc(100vh - 64px)",
   },
 } as const;
-const useNotification = () => {
+
+const NotificationProvider = ({ children }: { children: React.ReactNode }) => {
   const [messageApi, contextHolder] = message.useMessage();
 
   const notification = useCallback(
@@ -24,10 +26,16 @@ const useNotification = () => {
     [messageApi]
   );
 
-  return {
-    contextHolder,
+  const value = {
     notification,
   };
+
+  return (
+    <NotificationContext.Provider value={value}>
+      {contextHolder}
+      {children}
+    </NotificationContext.Provider>
+  );
 };
 
-export default useNotification;
+export default NotificationProvider;

@@ -2,11 +2,10 @@ import {
   createSlice,
   createAsyncThunk,
   type PayloadAction,
-  createSelector,
 } from "@reduxjs/toolkit";
 import { Task } from "@lib/interfaces";
 import * as api from "@lib/api";
-import { RootState } from "@store/store";
+import { RootState, StoreStatusType } from "@store/store";
 
 export interface TableFilters {
   statusFilter: "all" | "completed" | "incomplete";
@@ -17,8 +16,8 @@ export interface TableFilters {
 interface TasksState {
   tasks: Task[];
   filteredTasks: Task[];
-  status: "idle" | "loading" | "succeeded" | "failed";
-  error: string | null;
+  status: StoreStatusType;
+  error: boolean;
   statusFilter: "all" | "completed" | "incomplete";
   userIdFilter: number | number[] | null;
   titleFilter: string;
@@ -29,7 +28,7 @@ const initialState: TasksState = {
   tasks: [],
   filteredTasks: [],
   status: "idle",
-  error: null,
+  error: false,
   statusFilter: "all",
   titleFilter: "",
   userIdFilter: null,
@@ -90,13 +89,13 @@ const tasksSlice = createSlice({
         state.status = "loading";
       })
       .addCase(fetchTasks.fulfilled, (state, action) => {
-        state.status = "succeeded";
+        state.status = "success";
         state.tasks = action.payload;
         applyFilters(state);
       })
-      .addCase(fetchTasks.rejected, (state, action) => {
+      .addCase(fetchTasks.rejected, (state) => {
         state.status = "failed";
-        state.error = action.error.message || "Failed to fetch tasks";
+        state.error = true;
       })
       .addCase(updateTaskStatus.fulfilled, (state, action) => {
         const updatedTask = action.payload;
@@ -134,24 +133,17 @@ const applyFilters = (state: TasksState) => {
   state.filteredTasks = filtered;
 };
 
-export const tasksState = (state: RootState) => state.tasks;
-export const allTasks = createSelector(tasksState, (state) => state.tasks);
-export const filteredTasks = createSelector(
-  tasksState,
-  (state) => state.filteredTasks
-);
-export const statusFilter = createSelector(
-  tasksState,
-  (state) => state.statusFilter
-);
-export const userIdFilter = createSelector(
-  tasksState,
-  (state) => state.userIdFilter
-);
-export const titleFilter = createSelector(
-  tasksState,
-  (state) => state.titleFilter
-);
+export const selectAllTasks = (state: RootState) => state.tasks.tasks;
+export const selectStatus = (state: RootState) => state.tasks.status;
+export const selectError = (state: RootState) => state.tasks.error;
+export const selectFilteredTasks = (state: RootState) =>
+  state.tasks.filteredTasks;
+export const selectStatusFilter = (state: RootState) =>
+  state.tasks.statusFilter;
+export const selectUserIdFilter = (state: RootState) =>
+  state.tasks.userIdFilter;
+export const selectTitleFilter = (state: RootState) => state.tasks.titleFilter;
+export const selectCurrentPage = (state: RootState) => state.tasks.currentPage;
 
 export const {
   setStatusFilter,
