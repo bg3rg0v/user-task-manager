@@ -8,6 +8,7 @@ const useEditPostData = (userId: string, post: Post) => {
   const { deletePost, postIdAction, savePost, updatePostLocally } =
     usePostsContext();
 
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [selectedPost, setSelectedPost] = useState({
     title: post.title,
     body: post.body,
@@ -39,6 +40,15 @@ const useEditPostData = (userId: string, post: Post) => {
     setSelectedPost((prev) => ({ ...prev, [key]: value }));
   };
 
+  const toggleShowDeleteConfirm = useCallback(() => {
+    setShowDeleteConfirm(!showDeleteConfirm);
+  }, [showDeleteConfirm]);
+
+  const confirmDeleteHandler = () => {
+    setShowDeleteConfirm(false);
+    deletePost(userId, post.id);
+  };
+
   const actions = useMemo(
     () =>
       [
@@ -56,7 +66,7 @@ const useEditPostData = (userId: string, post: Post) => {
         {
           title: "Delete",
           color: { tooltip: "red", button: "danger" },
-          actionHandler: () => deletePost(userId, post.id),
+          actionHandler: toggleShowDeleteConfirm,
           loading: postIdAction.delete === post.id,
           icon: <DeleteOutlined style={{ fontSize: 22 }} />,
           disabled: false,
@@ -73,12 +83,11 @@ const useEditPostData = (userId: string, post: Post) => {
         },
       ] as const,
     [
-      deletePost,
       isContentChanged,
       post.id,
       postCancelHandler,
       updatePostAndSave,
-      userId,
+      toggleShowDeleteConfirm,
       isEditable.body,
       isEditable.title,
       postIdAction.delete,
@@ -92,8 +101,11 @@ const useEditPostData = (userId: string, post: Post) => {
     isValid,
     isEditable,
     selectedPost,
+    showDeleteConfirm,
     focusChangeHandler,
     inputChangeHandler,
+    confirmDeleteHandler,
+    toggleShowDeleteConfirm,
   };
 };
 

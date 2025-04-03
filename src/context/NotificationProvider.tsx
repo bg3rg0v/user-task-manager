@@ -20,6 +20,7 @@ const NotificationProvider = ({ children }: { children: React.ReactNode }) => {
       messageApi.open({
         type: type ?? "info",
         content: message,
+        duration: 1,
         ...notificationConfig,
       });
     },
