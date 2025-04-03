@@ -90,37 +90,28 @@ const useTasksData = () => {
   const columns = useMemo(
     () =>
       getTableColumns(users).map((column) => {
+        let filteredValue: FilterValue = [];
+
         if (column.key === "userId" && userIdFilter !== null) {
-          return {
-            ...column,
-            filteredValue: [userIdFilter] as FilterValue,
-          };
+          filteredValue = [userIdFilter] as FilterValue;
         }
 
         if (column.key === "status") {
-          let filteredValue: FilterValue | null = null;
           if (statusFilter === "completed") {
             filteredValue = [true];
           } else if (statusFilter === "incomplete") {
             filteredValue = [false];
           }
-
-          if (filteredValue) {
-            return {
-              ...column,
-              filteredValue,
-            };
-          }
         }
 
         if (column.key === "title" && titleFilter) {
-          return {
-            ...column,
-            filteredValue: [titleFilter] as FilterValue,
-          };
+          filteredValue = [titleFilter] as FilterValue;
         }
 
-        return column;
+        return {
+          ...column,
+          filteredValue,
+        };
       }),
     [users, userIdFilter, statusFilter, titleFilter]
   );
