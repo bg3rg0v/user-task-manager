@@ -15,7 +15,7 @@ import {
 } from "@store/features/tasksSlice";
 import { useAppDispatch, useAppSelector } from "@store/hooks";
 import { TableProps } from "antd";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { FilterValue } from "antd/es/table/interface";
 import { head } from "lodash";
 import { getTableColumns } from "./tasksTablePreprocessor";
@@ -47,8 +47,6 @@ const useTasksData = () => {
     fetchUsersStatus === "idle" ||
     fetchUsersStatus === "loading";
   const isError = isTasksError || isUsersError;
-
-  const [searchText, setSearchText] = useState("");
 
   useEffect(() => {
     if (fetchUsersStatus === "idle") {
@@ -89,17 +87,9 @@ const useTasksData = () => {
     }
   };
 
-  const handleSearch = (
-    selectedKeys: string[],
-    confirmCallBack: () => void
-  ) => {
-    setSearchText(selectedKeys[0]);
-    confirmCallBack();
-  };
-
   const columns = useMemo(
     () =>
-      getTableColumns(users, handleSearch).map((column) => {
+      getTableColumns(users).map((column) => {
         if (column.key === "userId" && userIdFilter !== null) {
           return {
             ...column,

@@ -3,6 +3,7 @@ import { SearchOutlined } from "@ant-design/icons";
 import { DataIndex } from "./tasksTablePreprocessor";
 import { useRef } from "react";
 import { FilterConfirmProps, FilterRestProps } from "antd/es/table/interface";
+import { head } from "lodash";
 
 const TableSearch = ({
   dataIndex,
@@ -11,7 +12,6 @@ const TableSearch = ({
   confirm,
   close,
   clearFilters,
-  handleSearch,
 }: {
   confirm: (param?: FilterConfirmProps) => void;
   dataIndex: DataIndex;
@@ -19,15 +19,12 @@ const TableSearch = ({
   setSelectedKeys: (selectedKeys: React.Key[]) => void;
   close: () => void;
   clearFilters?: (param?: FilterRestProps) => void;
-  handleSearch: (selectedKeys: string[], confirmCallBack: () => void) => void;
 }) => {
   const searchInput = useRef<InputRef>(null);
 
   const handleReset = (clearFilters: () => void) => {
     clearFilters();
-    handleSearch(selectedKeys as string[], () =>
-      confirm({ closeDropdown: false })
-    );
+    confirm({ closeDropdown: false });
   };
 
   return (
@@ -35,20 +32,16 @@ const TableSearch = ({
       <Input
         ref={searchInput}
         placeholder={`Search ${dataIndex}`}
-        value={selectedKeys[0]}
-        onChange={(e) =>
-          setSelectedKeys(e.target.value ? [e.target.value] : [])
-        }
+        value={head(selectedKeys)}
+        onChange={(e) => {
+          setSelectedKeys(e.target.value ? [e.target.value] : []);
+        }}
         style={{ marginBottom: 8, display: "block" }}
       />
       <Space>
         <Button
           type="primary"
-          onClick={() =>
-            handleSearch(selectedKeys as string[], () =>
-              confirm({ closeDropdown: false })
-            )
-          }
+          onClick={() => confirm({ closeDropdown: false })}
           icon={<SearchOutlined />}
           size="small"
           style={{ width: 90 }}
@@ -62,13 +55,7 @@ const TableSearch = ({
         >
           Reset
         </Button>
-        <Button
-          type="link"
-          size="small"
-          onClick={() => {
-            close();
-          }}
-        >
+        <Button type="link" size="small" onClick={() => close()}>
           Close
         </Button>
       </Space>
