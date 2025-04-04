@@ -8,14 +8,11 @@ import { Task } from "@lib/interfaces";
 import * as api from "@lib/api";
 import { RootState, StoreStatusType } from "@store/store";
 
-export const UPDATE_TASK_ERROR = "updateTaskError";
-
 interface TasksState {
   tasks: Task[];
   filteredTasks: Task[];
   fetchTasksStatus: StoreStatusType;
-  updateTaskId: number | null | typeof UPDATE_TASK_ERROR;
-  error: boolean;
+  updateTaskId: number | null;
   statusFilter: "all" | "completed" | "incomplete";
   userIdFilter: number | null;
   titleFilter: string;
@@ -27,7 +24,6 @@ const initialState: TasksState = {
   filteredTasks: [],
   fetchTasksStatus: "idle",
   updateTaskId: null,
-  error: false,
   statusFilter: "all",
   titleFilter: "",
   userIdFilter: null,
@@ -85,10 +81,9 @@ const tasksSlice = createSlice({
       })
       .addCase(fetchTasks.rejected, (state) => {
         state.fetchTasksStatus = "failed";
-        state.error = true;
       })
       .addCase(updateTask.rejected, (state) => {
-        state.updateTaskId = UPDATE_TASK_ERROR;
+        state.updateTaskId = null;
       })
       .addCase(updateTask.pending, (state, action) => {
         state.updateTaskId = action.meta.arg.taskId;
@@ -108,7 +103,6 @@ const tasksSlice = createSlice({
 
 export const selectFetchTasksStatus = (state: RootState) =>
   state.tasks.fetchTasksStatus;
-export const selectError = (state: RootState) => state.tasks.error;
 export const selectStatusFilter = (state: RootState) =>
   state.tasks.statusFilter;
 export const selectUserIdFilter = (state: RootState) =>

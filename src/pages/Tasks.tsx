@@ -6,7 +6,7 @@ import useTasksData from "@hooks/useTasksData";
 const Tasks = () => {
   const {
     isPageLoading,
-    error,
+    isPageError,
     columns,
     currentPage,
     filteredTasks,
@@ -16,7 +16,7 @@ const Tasks = () => {
   } = useTasksData();
 
   return (
-    <StatusWrapper loading={isPageLoading} error={error}>
+    <StatusWrapper loading={isPageLoading} error={isPageError}>
       <Space style={{ marginBottom: 16 }}>
         <Button
           disabled={!isFilterApplied}

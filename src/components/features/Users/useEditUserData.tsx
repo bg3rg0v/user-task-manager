@@ -1,11 +1,7 @@
 import { useState } from "react";
 import { isEmpty } from "lodash";
 import { User } from "@lib/interfaces";
-import {
-  selectUpdateUserStatus,
-  updateUser,
-  updateUserLocal,
-} from "@store/features/usersSlice";
+import { selectUpdateUserStatus, updateUser } from "@store/features/usersSlice";
 import { useAppDispatch, useAppSelector } from "@store/hooks";
 import { useForm } from "antd/es/form/Form";
 import { useNotificationContext } from "~/context/useNotificationContext";
@@ -27,7 +23,7 @@ const useEditUserData = (user: User) => {
   const dispatch = useAppDispatch();
   const { notification } = useNotificationContext();
   const updateUserStatus = useAppSelector(selectUpdateUserStatus);
-  const isUserUpdating = updateUserStatus === "loading";
+  const isUpdateUserLoading = updateUserStatus === "loading";
 
   const [form] = useForm<FieldData>();
   const [formStatus, setFormStatus] = useState(initialFormStatus);
@@ -73,10 +69,26 @@ const useEditUserData = (user: User) => {
         city: values.city,
       },
     };
-    dispatch(updateUserLocal(updatedUser));
-    await dispatch(updateUser(updatedUser));
-    notification("User Updated");
-    setFormStatus({ isChanged: false, isValid: false });
+    try {
+      const resultAction = await dispatch(updateUser(updatedUser));
+      if (updateUser.fulfilled.match(resultAction)) {
+        notification("User Updated Successfully", "success");
+        setFormStatus({ isChanged: false, isValid: true });
+      } else {
+        const errorMessage =
+          resultAction.error.message || "Failed to update user";
+        notification(`Error: ${errorMessage}`, "error");
+
+        form.setFieldsValue(originalValues);
+        setFormStatus(initialFormStatus);
+      }
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error occurred";
+      notification(`Error: ${errorMessage}`, "error");
+      form.setFieldsValue(originalValues);
+      setFormStatus(initialFormStatus);
+    }
   };
 
   const handleReset = () => {
@@ -91,7 +103,7 @@ const useEditUserData = (user: User) => {
     handleReset,
     onFinish,
     handleFieldsChange,
-    isUserUpdating,
+    isUpdateUserLoading,
   };
 };
 

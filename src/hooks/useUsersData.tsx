@@ -1,8 +1,8 @@
 import { useEffect } from "react";
-import { selectError } from "@store/features/tasksSlice";
 import {
   fetchUsers,
   selectFetchUsersStatus,
+  selectUpdateUserStatus,
   selectUsers,
 } from "@store/features/usersSlice";
 import { useAppDispatch, useAppSelector } from "@store/hooks";
@@ -10,8 +10,15 @@ import { useAppDispatch, useAppSelector } from "@store/hooks";
 const useUsersData = () => {
   const dispatch = useAppDispatch();
   const users = useAppSelector(selectUsers);
-  const error = useAppSelector(selectError);
   const fetchUsersStatus = useAppSelector(selectFetchUsersStatus);
+  const updateUsersStatus = useAppSelector(selectUpdateUserStatus);
+
+  const isPageLoading =
+    fetchUsersStatus === "idle" || fetchUsersStatus === "loading";
+  const isUpdateUserLoading = updateUsersStatus === "loading";
+
+  const isPageError = fetchUsersStatus === "failed";
+  const isUpdateUserError = updateUsersStatus === "failed";
 
   useEffect(() => {
     if (fetchUsersStatus === "idle") {
@@ -21,9 +28,10 @@ const useUsersData = () => {
 
   return {
     users,
-    error,
-    isPageLoading:
-      fetchUsersStatus === "idle" || fetchUsersStatus === "loading",
+    isPageError,
+    isPageLoading,
+    isUpdateUserLoading,
+    isUpdateUserError,
   };
 };
 

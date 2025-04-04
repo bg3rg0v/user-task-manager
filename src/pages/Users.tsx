@@ -4,10 +4,10 @@ import StatusWrapper from "@components/ui/StatusWrapper";
 import useUsersData from "@hooks/useUsersData";
 
 const Users = () => {
-  const { isPageLoading, error, users } = useUsersData();
+  const { isPageLoading, isPageError, users } = useUsersData();
 
   return (
-    <StatusWrapper error={error} loading={isPageLoading}>
+    <StatusWrapper error={isPageError} loading={isPageLoading}>
       <List
         itemLayout="vertical"
         dataSource={users}

@@ -1,17 +1,11 @@
-import {
-  createSlice,
-  createAsyncThunk,
-  type PayloadAction,
-} from "@reduxjs/toolkit";
-import type { User } from "@lib/interfaces";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { User } from "@lib/interfaces";
 import * as api from "@lib/api";
 import { RootState, StoreStatusType } from "@store/store";
 
 interface UsersState {
   users: User[];
-  error: boolean;
   editingUserId: number | null;
-  originalUserData: User | null;
   selectedUserId: number | null;
   status: {
     fetchUsers: StoreStatusType;
@@ -22,9 +16,7 @@ interface UsersState {
 const initialState: UsersState = {
   users: [],
   status: { fetchUsers: "idle", updateUser: "idle" },
-  error: false,
   editingUserId: null,
-  originalUserData: null,
   selectedUserId: null,
 };
 
@@ -41,18 +33,7 @@ export const updateUser = createAsyncThunk(
 const usersSlice = createSlice({
   name: "users",
   initialState,
-  reducers: {
-    setSelectedUserId: (state, action: PayloadAction<number>) => {
-      state.selectedUserId = action.payload;
-    },
-    updateUserLocal: (state, action: PayloadAction<User>) => {
-      const updatedUser = action.payload;
-      const index = state.users.findIndex((user) => user.id === updatedUser.id);
-      if (index !== -1) {
-        state.users[index] = { ...state.users[index], ...updatedUser };
-      }
-    },
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(fetchUsers.pending, (state) => {
@@ -64,7 +45,6 @@ const usersSlice = createSlice({
       })
       .addCase(fetchUsers.rejected, (state) => {
         state.status.fetchUsers = "failed";
-        state.error = true;
       })
       .addCase(updateUser.pending, (state) => {
         state.status.updateUser = "loading";
@@ -79,18 +59,17 @@ const usersSlice = createSlice({
           state.users[index] = updatedUser;
         }
         state.editingUserId = null;
-        state.originalUserData = null;
+      })
+      .addCase(updateUser.rejected, (state) => {
+        state.status.updateUser = "failed";
       });
   },
 });
 
 export const selectUsers = (state: RootState) => state.users.users;
-export const selectError = (state: RootState) => state.users.error;
 export const selectFetchUsersStatus = (state: RootState) =>
   state.users.status.fetchUsers;
 export const selectUpdateUserStatus = (state: RootState) =>
   state.users.status.updateUser;
-
-export const { updateUserLocal } = usersSlice.actions;
 
 export default usersSlice.reducer;

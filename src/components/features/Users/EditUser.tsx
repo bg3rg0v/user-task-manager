@@ -17,7 +17,7 @@ const EditUser = ({
     handleReset,
     onFinish,
     handleFieldsChange,
-    isUserUpdating,
+    isUpdateUserLoading,
   } = useEditUserData(user);
 
   return (
@@ -90,7 +90,7 @@ const EditUser = ({
             Cancel
           </Button>
           <Button
-            loading={isUserUpdating}
+            loading={isUpdateUserLoading}
             type="primary"
             htmlType="submit"
             disabled={!isChanged || !isValid}

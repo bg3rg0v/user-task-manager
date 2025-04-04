@@ -2,7 +2,6 @@ import { Task } from "@lib/interfaces";
 import {
   fetchTasks,
   selectCurrentPage,
-  selectError as selectTasksError,
   selectFetchTasksStatus,
   selectStatusFilter,
   selectTitleFilter,
@@ -25,18 +24,15 @@ import {
   selectFetchUsersStatus,
   selectUsers,
   fetchUsers,
-  selectError as selectUsersError,
 } from "@store/features/usersSlice";
 
 type Filter = FilterValue | null;
 const useTasksData = () => {
   const dispatch = useAppDispatch();
   const fetchUsersStatus = useAppSelector(selectFetchUsersStatus);
-  const isUsersError = useAppSelector(selectUsersError);
   const users = useAppSelector(selectUsers);
 
   const fetchTasksStatus = useAppSelector(selectFetchTasksStatus);
-  const isTasksError = useAppSelector(selectTasksError);
   const statusFilter = useAppSelector(selectStatusFilter);
   const titleFilter = useAppSelector(selectTitleFilter);
   const userIdFilter = useAppSelector(selectUserIdFilter);
@@ -49,7 +45,9 @@ const useTasksData = () => {
     fetchTasksStatus === "loading" ||
     fetchUsersStatus === "idle" ||
     fetchUsersStatus === "loading";
-  const error = isTasksError || isUsersError;
+  const isTasksError = fetchTasksStatus === "failed";
+  const isUserError = fetchUsersStatus === "failed";
+  const isPageError = isTasksError || isUserError;
 
   useEffect(() => {
     if (fetchUsersStatus === "idle") {
@@ -124,8 +122,8 @@ const useTasksData = () => {
   );
 
   return {
-    error,
     columns,
+    isPageError,
     isPageLoading,
     currentPage,
     filteredTasks,
