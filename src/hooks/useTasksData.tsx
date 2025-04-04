@@ -18,7 +18,7 @@ import { useAppDispatch, useAppSelector } from "@store/hooks";
 import { TableProps } from "antd";
 import { useEffect, useMemo } from "react";
 import { FilterValue } from "antd/es/table/interface";
-import { head } from "lodash";
+import { head, isEmpty } from "lodash";
 import { getTableColumns } from "../components/features/Tasks/tasksTablePreprocessor";
 import {
   selectFetchUsersStatus,
@@ -66,8 +66,11 @@ const useTasksData = () => {
   };
 
   const handleStatusFilterChange = (status: Filter) => {
-    const statusValue =
-      status === null ? "all" : head(status) ? "completed" : "incomplete";
+    const statusValue = isEmpty(status)
+      ? "all"
+      : head(status)
+      ? "completed"
+      : "incomplete";
     dispatch(setStatusFilter(statusValue));
   };
 
