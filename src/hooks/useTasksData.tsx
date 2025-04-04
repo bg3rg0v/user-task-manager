@@ -19,7 +19,7 @@ import { TableProps } from "antd";
 import { useEffect, useMemo } from "react";
 import { FilterValue } from "antd/es/table/interface";
 import { head, isEmpty } from "lodash";
-import { getTableColumns } from "../components/features/Tasks/tasksTablePreprocessor";
+import { getTableColumns } from "@components/features/Tasks/tasksTablePreprocessor";
 import {
   selectFetchUsersStatus,
   selectUsers,
